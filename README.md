@@ -6,7 +6,7 @@
 Create a file named ```Dockerfile```. This file will contain all the instructions to build our Docker image.
 
 **_Example content:_**
-```
+```dockerfile
 FROM node:15
 WORKDIR /app
 COPY package.json .
@@ -84,7 +84,7 @@ Basically **docker-compose** allows to manage multiple containers from a single 
 Create a file named ```docker-compose.yml``` that will contain the configuration instructions.
 
 **_Example:_**
-```
+```yml
 version: "3"
 services: 
   node-app:
@@ -110,3 +110,68 @@ The ```--build``` option is used to force build.
 ```
 docker-compose down -v
 ```
+
+### Differenciation between ```development``` and ```production```
+Change the content of ```docker-compose.yml``` to this:
+```yml
+version: "3"
+services: 
+  node-app:
+    build: .
+    ports: 
+      - "3000:3000"
+    environment: 
+      - PORT=3000
+```
+Then create 2 files ```docker-compose.dev.yml``` and ```docker-compose.prod.yml``` respectively for development and production environments.
+```yml
+# docker-compose.dev.yml content
+version: "3"
+services: 
+  node-app:
+    build: 
+      context: .
+      args: 
+        NODE_ENV: development
+    volumes: 
+      - "./:/app"
+      - "/app/node_modules"
+    environment: 
+      - NODE_ENV=development
+    command: npm run dev
+```
+```yml
+# docker-compose.prod.yml content
+version: "3"
+services: 
+  node-app:
+    build: 
+      context: .
+      args: 
+        NODE_ENV: production
+    environment: 
+      - NODE_ENV=production
+    command: node index.js
+```
+Each one of these files overrides parts of the configuration for ```docker-compose.yml``` according to the target environment.
+
+#### Start dev
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+```
+
+#### Stop dev
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
+```
+
+#### Start prod
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
+```
+
+#### Stop prod
+```
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
+```
+The ```--build``` option forces image rebuild, the ```-v``` option when destroying containers removes the associated volumes
