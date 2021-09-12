@@ -76,3 +76,37 @@ docker run -d --env-file ./.env -p 3000:8080 --name node-app node-app-image
 docker rm <container-name> -fv
 ```
 The ```-f``` option forces the deletion of the container even if it's running, the option ```-v``` deletes the volume associated with the container.
+
+## docker-compose
+Basically **docker-compose** allows to manage multiple containers from a single configuration.
+
+### Configuration file
+Create a file named ```docker-compose.yml``` that will contain the configuration instructions.
+
+**_Example:_**
+```
+version: "3"
+services: 
+  node-app:
+    build: .
+    ports: 
+      - "3000:3000"
+    volumes: 
+      - ./:/app
+      - /app/node_modules
+    environment: 
+      - PORT=3000
+    # env_file: 
+    #   - .env
+```
+
+### Run containers
+```
+docker-compose up -d --build
+```
+The ```--build``` option is used to force build.
+
+### Stop/delete containers
+```
+docker-compose down -v
+```
