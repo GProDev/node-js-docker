@@ -1,9 +1,10 @@
 const { Router } = require('express')
+const UserAuth = require('../middleware/user-auth')
 const Post = require('../model/post')
 
-const router = Router()
+const PostCtrl = Router()
 
-router.post('/', async (req, res) => {
+PostCtrl.post('/', UserAuth, async (req, res) => {
   try {
     const post = await Post.create(req.body)
     res.json(post)
@@ -13,7 +14,7 @@ router.post('/', async (req, res) => {
   }
 })
 
-router.get('/', async (req, res) => {
+PostCtrl.get('/', async (req, res) => {
   try {
     const posts = await Post.find()
     res.json(posts)
@@ -23,7 +24,7 @@ router.get('/', async (req, res) => {
   }
 })
 
-router.get('/:id', async (req, res) => {
+PostCtrl.get('/:id', async (req, res) => {
   const { id } = req.params
   try {
     const post = await Post.findById(id)
@@ -34,7 +35,7 @@ router.get('/:id', async (req, res) => {
   }
 })
 
-router.delete('/', async (req, res) => {
+PostCtrl.delete('/', async (req, res) => {
   const { id } = req.params
   try {
     await Post.findByIdAndDelete(id)
@@ -45,4 +46,4 @@ router.delete('/', async (req, res) => {
   }
 })
 
-module.exports = router
+module.exports = PostCtrl

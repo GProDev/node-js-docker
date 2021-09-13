@@ -1,5 +1,6 @@
 const express = require('express')
 const { connectDb } = require('./src/dbconnection')
+const UserSession = require('./src/middleware/user-session')
 const router = require('./src/router')
 
 connectDb()
@@ -13,6 +14,8 @@ const port = PORT || 3000
 app.get('/', (req, res) => {
   res.send("<h2>Hi there</h2>")
 })
+
+app.use(UserSession)
 
 app.use(router)
 
