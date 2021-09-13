@@ -204,3 +204,89 @@ volumes:
 Using a named volume allows our mongo container to preserve its database between restart.
 
 **_Caution:_** At this point avoid using the flag ```-v``` when running ```docker-compose ... down``` as it will delete volumes including named ones, thus deleting the database.
+
+## Deploy to production
+
+### Install Docker on Lunix server (the simple way)
+1. Run the following command on the server terminal to download the Docker installation script
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+```
+2. Run the Docker installation script
+```
+sh get-docker.sh
+```
+3. Once complete, check the installation with this commande
+```
+docker -v
+```
+
+### Install docker-compose
+1. Run the following command to get the docker-compose binary
+```
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+```
+2. Then run this command to make docker-compose executable
+```
+sudo chmod +x /usr/local/bin/docker-compose
+```
+3. Use this command to check if docker-compose works correctly
+```
+docker-compose -v
+```
+
+### Configure the environment variables for production
+Configure ```docker-compose.prod.yml```'s environment variable to equal the environment variables of the same names on the host machine.
+```yml
+# docker-compose.prod.yml
+version: "3"
+services: 
+  nginx:
+    ports: 
+      - "80:80"
+  node-app:
+    build: 
+      context: .
+      args: 
+        NODE_ENV: production
+    ports: 
+      - "80:80"
+    environment: 
+      - NODE_ENV=production
+      # With the following syntax, docker sets the environment variables to their value on the host machine
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - SESSION_SECRET=${SESSION_SECRET}
+    command: node index.js
+
+  mongo:
+    image: mongo
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+```
+
+### Set environment variables on the host machine
+1. Create a file (say ```.env```) that contains the environment variables
+```conf
+# .env file
+NODE_ENV=production
+MONGO_USER=gprodev
+MONGO_PASSWORD=mypassword
+SESSION_SECRET=secret
+MONGO_INITDB_ROOT_USERNAME=gprodev
+MONGO_INITDB_ROOT_PASSWORD=mypassword
+```
+2. Open the current user's ```.profile``` for edit
+```
+vi ~/.profile
+```
+and add the following line at the end of the file and save
+```
+set -o allexport; source ~/.env; set +o allexport
+```
+3. Exit the SSH session and log in again
+4. Run the following command to verify the that your environment variables have been set
+```
+printenv
+```
