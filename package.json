@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "docker-down": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml down",
+    "docker-up": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d",
+    "docker-logs": "docker logs node-docker_node-app_1 -f"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^6.0.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"

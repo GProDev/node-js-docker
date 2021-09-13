@@ -175,3 +175,32 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 ```
 The ```--build``` option forces image rebuild, the ```-v``` option when destroying containers removes the associated volumes
+
+### Adding MongoDB
+Add MongoDB as a service in ```docker-compose.yml```
+```yml
+version: "3"
+services: 
+  node-app:
+    build: .
+    ports: 
+      - "3000:3000"
+    environment: 
+      - PORT=3000
+    depends_on: 
+      - mongo
+
+  mongo:
+    image: mongo
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=gprodev
+      - MONGO_INITDB_ROOT_PASSWORD=mypassword
+    volumes: 
+      - mongo-db:/data/db
+
+volumes: 
+  mongo-db:
+```
+Using a named volume allows our mongo container to preserve its database between restart.
+
+**_Caution:_** At this point avoid using the flag ```-v``` when running ```docker-compose ... down``` as it will delete volumes including named ones, thus deleting the database.

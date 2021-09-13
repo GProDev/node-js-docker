@@ -1,0 +1,6 @@
+let { MONGO_IP, MONGO_PORT, MONGO_USER, MONGO_PASSWORD } = process.env
+
+MONGO_IP ||= 'mongo'
+MONGO_PORT ||= 27017
+
+module.exports = { MONGO_IP, MONGO_PORT, MONGO_USER, MONGO_PASSWORD }
