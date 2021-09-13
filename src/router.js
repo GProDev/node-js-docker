@@ -6,8 +6,13 @@ const router = Router();
 
 router.use(json())
 
-router.use('/posts', PostCtrl)
+router.use((req, res, next) => {
+  console.log(req.url)
+  next()
+})
 
-router.use('/user', UserCtrl)
+router.use('/ws/posts', PostCtrl)
+
+router.use('/ws/user', UserCtrl)
 
 module.exports = router

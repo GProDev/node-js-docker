@@ -2,18 +2,19 @@ const express = require('express')
 const { connectDb } = require('./src/dbconnection')
 const UserSession = require('./src/middleware/user-session')
 const router = require('./src/router')
-
-connectDb()
-
-const app = express()
+const cors = require('cors')
 
 const { PORT } = process.env
 
 const port = PORT || 3000
 
-app.get('/', (req, res) => {
-  res.send("<h2>Hi there</h2>")
-})
+connectDb()
+
+const app = express()
+
+app.enable('trust proxy')
+
+app.use(cors({}))
 
 app.use(UserSession)
 
