@@ -290,3 +290,11 @@ set -o allexport; source ~/.env; set +o allexport
 ```
 printenv
 ```
+
+### Run in production
+Now you can clone your project on your production host machine using Git.
+
+Then run de following comment to start in production mode
+```
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
